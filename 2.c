@@ -10,7 +10,7 @@ typedef struct _Person* Position;
 typedef struct _Person {
 	char name[MAX_SIZE];
 	char lastName[MAX_SIZE];
-	int birthYear; //date of birth
+	int birthYear;
 	Position next;
 }Person;
 
