@@ -14,27 +14,26 @@ typedef struct _student {
 int countStudents(char fileName[MAX_SIZE]);
 student* allocateMemory(int studentNum);
 int writeToStudentArray(student* students, char fileName[MAX_SIZE], int studentNum); //which way correct for char arrays?
-int displayStudentData(student* students, int studentNum);
+int displayStudentData(student* students, int studentNum, int maxPoints);
 
 int main() {
     char fileName[MAX_SIZE];
     int studentNum = 0;
+    int maxPoints = 0;
     student* firstStudentPos = NULL;
 
-    /*printf("Unesi ime datoteke: ");
+    printf("File name: ");
     scanf("%s", fileName);
-    */
-    strcpy(fileName, "text.txt");
+    printf("Max points: ");
+    scanf(" %d", &maxPoints);
 
+    
     studentNum = countStudents(fileName);
     printf("%d students\n", studentNum);
     firstStudentPos = allocateMemory(studentNum);
     writeToStudentArray(firstStudentPos, fileName, studentNum);
 
-    displayStudentData(firstStudentPos, studentNum); //has a fuck ton of errors here, proably 
-    //printf("%d\n", firstStudentPos[0].points); //got large neg number so likely issue with input
-
-
+    displayStudentData(firstStudentPos, studentNum, maxPoints); 
 
 
     return 0;
@@ -61,7 +60,7 @@ int countStudents(char* fileName) { //dont remember is making it a pointer is wh
 
 student* allocateMemory(int studentNum) {
     student* students = NULL;
-    students = (student*) malloc(sizeof(student) * studentNum);
+    students = (student*)malloc(sizeof(student) * studentNum);
     if (students == NULL) {
         printf("Error: unable to allocate memory\n");
         return NULL;
@@ -69,7 +68,7 @@ student* allocateMemory(int studentNum) {
     return students;
 }
 
-int writeToStudentArray(student* students, char fileName[MAX_SIZE], int studentNum) { //probably an error here but what is it?
+int writeToStudentArray(student* students, char fileName[MAX_SIZE], int studentNum) { 
     FILE* file = NULL;
     int i = 0;
 
@@ -79,22 +78,21 @@ int writeToStudentArray(student* students, char fileName[MAX_SIZE], int studentN
     }
     for (i = 0; i < studentNum; i++) {
         fscanf(file, " %s %s %d", students[i].name, students[i].lastName, &(students[i].points));
-        //printf("%s %s %f\n", students[i].name, students[i].lastName, (students[i].points));
 
     }
-
-
 
     return 0;
 }
 
 
-int displayStudentData(student* students, int studentNum) {
+int displayStudentData(student* students, int studentNum, int maxPoints) {
     int i = 0;
+    float relativePoints = 0;
 
+    printf("first name    last name    points    relative points\n");
     for (i = 0; i < studentNum; i++) {
-        printf("%s %s %d\n", students[i].name, students[i].lastName, students[i].points);
-        
+        relativePoints = (float)students[i].points / maxPoints * 100;
+        printf("%s    %s    %d%.2f\n", students[i].name, students[i].lastName, students[i].points, relativePoints);
     }
     return 0;
 }
