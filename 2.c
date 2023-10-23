@@ -16,13 +16,13 @@ typedef struct _Person {
 
 
 int newFirstElement(Position p, char* newName, char* newlastName, int newBirthYear); //&head
-int newLastElement(Position p, char* newName, char* newlastName, int newBirthYear); //todo
+int newLastElement(Position p, char* newName, char* newlastName, int newBirthYear); //&head
 Position createPerson(char* newName, char* newlastName, int newBirthYear);
 Position findElement(Position p, char* lastName); //head.next
 int deleteElement(Position p, char* lastName); //&head
 int printList(Position p); //head.next
 
-int menu(); //work on this later
+//int menu(); //work on this later, maybe
 
 
 int main() {
@@ -32,8 +32,9 @@ int main() {
 	head.birthYear = 0;
 	head.next = NULL;
 
-	newFirstElement(&head, "abc", "xyz", 2000); 
+	newFirstElement(&head, "abc", "xyz", 2000);
 	newFirstElement(&head, "a", "m", 1997);
+	newLastElement(&head, "last", "l", 1968);
 
 	printList(head.next);
 	deleteElement(&head, "m");
@@ -57,8 +58,15 @@ int newFirstElement(Position p, char* newName, char* newlastName, int newBirthYe
 	return 0;
 }
 
-int newLastElement(Position p, char* newName, char* newlastName, int newBirthYear) { //todo
+int newLastElement(Position p, char* newName, char* newlastName, int newBirthYear) { //&head
+	Position newPerson = NULL;
+	newPerson = createPerson(newName, newlastName, newBirthYear);
 
+	while (p->next != NULL) {
+		p = p->next;
+	}
+	p->next = newPerson;
+	newPerson->next = NULL;
 	return 0;
 }
 
@@ -82,7 +90,7 @@ Position findElement(Position p, char* lastName) {
 		return NULL;
 	}
 
-	while ((p != NULL) && (strcmp(lastName, p->lastName) != 0)) { 
+	while ((p != NULL) && (strcmp(lastName, p->lastName) != 0)) {
 		p = p->next;
 
 	}
@@ -102,7 +110,7 @@ int deleteElement(Position p, char* lastName) {
 	p->next = p->next->next;
 	free(temp);
 
-	return 0; 
+	return 0;
 }
 
 int printList(Position p) { //headnext(
