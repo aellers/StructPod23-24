@@ -1,3 +1,7 @@
+//char initialize to \0 (not about this but generally; scanf with space expects some character? whitespace first then whatever? 
+// za cita iz listu sprema se u listu iz datoteke
+//above from what was said looking at my code
+//a function failed if it didn't do what it was supposed to
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +43,7 @@ int writeList(Position p, char* fileName); //to file  //&head
 * outputs elements in file
 * somewhat ambiguous cause this could be a function which reads from file and creates/adds list
 */
-int readList(char* fileName);
+int readList(Position p, char* fileName);
 
 //int menu(); //work on this later, maybe
 
@@ -65,7 +69,7 @@ int main() {
 	//readList("text.txt"); 
 
 	deleteAll(head.next);
-	head.next = NULL; 
+	head.next = NULL;
 
 	return 0;
 }
@@ -73,9 +77,9 @@ int main() {
 int newFirstElement(Position p, char* newName, char* newlastName, int newBirthYear) {
 	Position newPerson = NULL;
 	newPerson = createPerson(newName, newlastName, newBirthYear);
-	if (!newPerson) {
-		printf("Error: unable add person\n");
-		return 1; //do i return 1 here or not?
+	if (newPerson == NULL) {
+		fprintf(stderr, "Error: unable add person\n");
+		return EXIT_FAILURE;
 	}
 	newPerson->next = p->next;
 	p->next = newPerson;
@@ -86,7 +90,10 @@ int newFirstElement(Position p, char* newName, char* newlastName, int newBirthYe
 int newLastElement(Position p, char* newName, char* newlastName, int newBirthYear) { //&head
 	Position newPerson = NULL;
 	newPerson = createPerson(newName, newlastName, newBirthYear);
-
+	if (newPerson == NULL) {
+		fprintf(stderr, "Error: unable add person\n");
+		return EXIT_FAILURE;
+	}
 	while (p->next != NULL) {
 		p = p->next;
 	}
@@ -105,7 +112,10 @@ int newBeforeElement(Position p, char* newName, char* newlastName, int newBirthY
 		return EXIT_FAILURE;
 	}
 	newPerson = createPerson(newName, newlastName, newBirthYear);
-
+	if (newPerson == NULL) {
+		fprintf(stderr, "Error: unable add person\n");
+		return EXIT_FAILURE;
+	}
 
 	temp = beforeElement->next;
 	beforeElement->next = newPerson;
@@ -124,6 +134,10 @@ int newAfterElement(Position p, char* newName, char* newlastName, int newBirthYe
 		return EXIT_FAILURE;
 	}
 	newPerson = createPerson(newName, newlastName, newBirthYear);
+	if (newPerson == NULL) {
+		fprintf(stderr, "Error: unable add person\n");
+		return EXIT_FAILURE;
+	}
 
 	if (afterElement->next != NULL) {
 		temp->next = afterElement->next;
@@ -137,9 +151,9 @@ int newAfterElement(Position p, char* newName, char* newlastName, int newBirthYe
 
 Position createPerson(char* newName, char* newlastName, int newBirthYear) {
 	Position newPerson = (Position)malloc(sizeof(Person));
-	if (!newPerson) {
-		printf("Error: unable to allocate memory\n");
-		return NULL;
+	if (newPerson == NULL) {
+		fprintf(stderr, "Error: unable add person\n");
+		return EXIT_FAILURE;
 	}
 	strcpy(newPerson->name, newName);
 	strcpy(newPerson->lastName, newlastName);
@@ -149,15 +163,13 @@ Position createPerson(char* newName, char* newlastName, int newBirthYear) {
 
 }
 
-Position findElement(Position p, char* lastName) { //does this work properly if element doesn't exist? //where is this used
+Position findElement(Position p, char* lastName) { 
 	if (p == NULL) {
-		//printf("Empty list\n");
 		return NULL;
 	}
 
 	while ((p != NULL) && (strcmp(lastName, p->lastName) != 0)) {
 		p = p->next;
-
 	}
 	return p;
 }
@@ -169,11 +181,10 @@ Position findBeforeElement(Position p, char* lastName) { //&head //returns null 
 	while ((p->next != NULL) && (strcmp(p->next->lastName, lastName)) != 0) {
 		p = p->next;
 	}
-	if (p->next == NULL) { //is this necessary
-		return NULL;
-	}
+
 	return p;
 }
+
 
 int deleteElement(Position p, char* lastName) {
 	Position temp = NULL;
@@ -184,8 +195,8 @@ int deleteElement(Position p, char* lastName) {
 		}
 		p = p->next;
 	}
-	if (p->next == NULL) { //is this a failure or not? idk?
-		return EXIT_FAILURE;
+	if (p->next == NULL) { //not failure since thing that don't want delete isn't there
+		return 0;
 	}
 
 	temp = p->next;
@@ -257,11 +268,6 @@ int findElementNum(Position p) { //headnext
 	return counter;
 }
 
-/*
-* 1 element - sorted
-* 0 elements - failure or sucess? will just say sucess
-* appears to be error here? maybe? doesn't show up with debugger
-*/
 int bubbleSortElements(Position p) { //head.next 
 	Position temp = NULL;
 	int i = 0;
@@ -318,6 +324,7 @@ int writeList(Position p, char* fileName) { //&head
 	return 0;
 }
 
+//this is wrong, supposed to add to sth 
 int readList(char* fileName) { //getting erros I don't understand
 	FILE* file = fopen(fileName, "r");
 	char* name = { 0 };
