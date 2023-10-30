@@ -1,4 +1,3 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +27,7 @@ Position createPerson(char* newName, char* newlastName, int newBirthYear);
 Position findElement(Position p, char* lastName); //head.next
 Position findBeforeElement(Position p, char* lastName); //&head //returns null if not found;
 int deleteElement(Position p, char* lastName); //&head
-int deleteAll(Position p);  //&head
+int deleteAll(Position p);  //head.next
 int swapElements(Position p, Position q); //two (pointers of) elements we want to swap
 int findElementNum(Position p); //headnext
 
@@ -40,7 +39,7 @@ int writeList(Position p, char* fileName); //to file  //&head
 * outputs elements in file
 * somewhat ambiguous cause this could be a function which reads from file and creates/adds list
 */
-int readList(char* fileName); 
+int readList(char* fileName);
 
 //int menu(); //work on this later, maybe
 
@@ -58,15 +57,16 @@ int main() {
 
 	bubbleSortElements(head.next);
 	/*
-	
+
 	printf("\n\nnew list\n");
 	printf("element num: %d\n", findElementNum(head.next));
 	*/
 	//writeList(&head, "text.txt");
 	//readList("text.txt"); 
 
-	deleteAll(&head);
-	
+	deleteAll(head.next);
+	head.next = NULL; 
+
 	return 0;
 }
 
@@ -105,8 +105,8 @@ int newBeforeElement(Position p, char* newName, char* newlastName, int newBirthY
 		return EXIT_FAILURE;
 	}
 	newPerson = createPerson(newName, newlastName, newBirthYear);
-	
-	
+
+
 	temp = beforeElement->next;
 	beforeElement->next = newPerson;
 	newPerson->next = temp;
@@ -117,18 +117,18 @@ int newBeforeElement(Position p, char* newName, char* newlastName, int newBirthY
 int newAfterElement(Position p, char* newName, char* newlastName, int newBirthYear, char* soughtLastName) {
 	Position newPerson = NULL;
 	Position afterElement = NULL; //kinda confusing if you think about it, what would be better?
-	Position temp = NULL; 
+	Position temp = NULL;
 
 	afterElement = findElement(p, soughtLastName);
 	if (afterElement == NULL) {
 		return EXIT_FAILURE;
 	}
 	newPerson = createPerson(newName, newlastName, newBirthYear);
-	
+
 	if (afterElement->next != NULL) {
 		temp->next = afterElement->next;
 	}
-	
+
 	afterElement->next = newPerson;
 	newPerson->next = temp;
 
@@ -193,7 +193,7 @@ int deleteElement(Position p, char* lastName) {
 	if (temp == NULL) {
 		return 0;
 	}
-	
+
 	free(temp);
 	return 0;
 }
@@ -206,16 +206,16 @@ int deleteAll(Position p) {
 		free(p);
 		p = temp;
 	}
-	return 0; 
+	return 0;
 }
 
 int swapElements(Position p, Position q) { //are there better ways to do this?
 	int tempInt = 0;
 	char* tempFirst = NULL;
-	char* tempLast = NULL; 
+	char* tempLast = NULL;
 
 	if (p == NULL || q == NULL) {
-			return EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
 	tempFirst = (char*)malloc((strlen(p->name) + 1) * sizeof(char));
@@ -249,7 +249,7 @@ int swapElements(Position p, Position q) { //are there better ways to do this?
 }
 
 int findElementNum(Position p) { //headnext
-	int counter = 0; 
+	int counter = 0;
 	while (p != NULL) {
 		counter++;
 		p = p->next;
@@ -269,12 +269,13 @@ int bubbleSortElements(Position p) { //head.next
 
 	int elNum = findElementNum(p);
 	if (elNum == 0) {
-		return 0; 
-	} else if (elNum == 1) {
-		return 0; 
+		return 0;
+	}
+	else if (elNum == 1) {
+		return 0;
 	}
 
-	temp = p; 
+	temp = p;
 	do {
 		swapedNum = 0;
 		for (i = 0; i <= (elNum - 2); i++) {
@@ -286,7 +287,7 @@ int bubbleSortElements(Position p) { //head.next
 		}
 
 	} while (swapedNum != 0);
-	
+
 	return 0;
 }
 
@@ -305,7 +306,7 @@ int printList(Position p) { //headnext
 
 
 int writeList(Position p, char* fileName) { //&head
-	FILE* file = fopen(fileName, "w"); 
+	FILE* file = fopen(fileName, "w");
 	if (file == NULL) {
 		return EXIT_FAILURE;
 	}
@@ -321,11 +322,11 @@ int readList(char* fileName) { //getting erros I don't understand
 	FILE* file = fopen(fileName, "r");
 	char* name = { 0 };
 	char* lastName = { 0 };
-	int birthYear = 0; 
+	int birthYear = 0;
 
 	if (file == NULL) {
 		return EXIT_FAILURE;
-	} 
+	}
 	printf("Text from file %s\n", fileName);
 	while (!feof(file)) {
 		fscanf(file, "%s %s %d ", name, lastName, &birthYear);
@@ -333,5 +334,5 @@ int readList(char* fileName) { //getting erros I don't understand
 	}
 
 	fclose(file);
-	return 0; 
+	return 0;
 }
