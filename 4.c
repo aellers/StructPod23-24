@@ -36,20 +36,29 @@ int createPolynomial(Position head, char* currentBuffer);
 
 int printPolynomial(Position head); //maybe make another one which prints to some stream, overload
 
-
+int addPolynomials(Position head1, Position head2, Position headAdd);
+int multiplyPolynomials(Position head1, Position head2, Position headMult); //total mess, what's a nicer way to do it
 
 
 int main() {
     Element polynomial1 = { .coefficient = 0, .exponent = 0, .next = NULL };
     Element polynomial2 = { .coefficient = 0, .exponent = 0, .next = NULL };
-    Element polynomialMult = { .coefficient = 0, .exponent = 0, .next = NULL }; //for result of multiplication
+
     Element polynomialAdd = { .coefficient = 0, .exponent = 0, .next = NULL }; //for reslt of addition
-
-
+    Element polynomialMult = { .coefficient = 0, .exponent = 0, .next = NULL }; //for result of multiplication
+    
 
     readPolynomials(&polynomial1, &polynomial2, "text.txt"); 
     printPolynomial(&polynomial1); 
     printPolynomial(&polynomial2);
+
+    addPolynomials(&polynomial1, &polynomial2, &polynomialAdd); //some problems here, not everything shows up
+    printf("add\n");
+    printPolynomial(&polynomialAdd);
+
+    multiplyPolynomials(&polynomial1, &polynomial2, &polynomialMult);  
+    printf("mult\n");
+    printPolynomial(&polynomialMult); 
 
     return 0; 
 }
@@ -129,7 +138,7 @@ int createPolynomial(Position head, char* currentBuffer) {
         while ((p->next != NULL) && (ex <= p->next->exponent)) { //pay attention to things like this, actually think
             p = p->next;
         }
-        if (p->exponent == ex) {
+        if (p->exponent == ex) { //can this be undefined?
             p->coefficient += co;
             if (p->coefficient == 0) {
                 deleteElement(findPrevEl(head, p), p); // is this bad practice?
@@ -172,4 +181,84 @@ Position findPrevEl(Position head, Position p) {
     else {
         return prev; 
     }
+}
+
+int addPolynomials(Position head1, Position head2, Position headAdd) {
+    Position p1 = head1->next;
+    Position p2 = head2->next;
+    Position newEl = NULL;
+    Position prev = headAdd;
+
+    while ((p1 != NULL) && (p2 != NULL)) {
+        if (p1->exponent == p2->exponent) {
+            newEl = createElement(p1->coefficient + p2->coefficient, p1->exponent); 
+            insertElement(prev, newEl);
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+        else if (p1->exponent > p2->exponent) {
+            newEl = createElement(p1->coefficient, p1->exponent);
+            insertElement(prev, newEl);
+            p1 = p1->next;
+        }
+        else {
+            newEl = createElement(p2->coefficient, p2->exponent); 
+            insertElement(prev, newEl);
+            p2 = p2->next;
+        }
+        prev = newEl;
+    }
+    while (p1 != NULL) {
+        newEl = createElement(p1->coefficient, p1->exponent);
+        insertElement(prev, newEl);
+        p1 = p1->next;
+        prev = newEl;
+    }
+    while (p2 != NULL) {
+        newEl = createElement(p2->coefficient, p2->exponent);
+        insertElement(prev, newEl);
+        p2 = p2->next;
+        prev = newEl;
+    }
+
+    return 0; 
+}
+
+int multiplyPolynomials(Position head1, Position head2, Position headMult) { //numbers get input all (order) wrong, don't get it
+    Position p1 = head1->next;
+    Position p2 = head2;
+    Position pM = headMult; //for inner for loop
+    Position newEl = NULL; 
+    Position prev = headMult;
+
+    while (p1 != NULL) {
+        p2 = head2;
+        while (p2->next != NULL) {
+            p2 = p2->next;
+            pM = headMult;
+            if ((p1->coefficient * p2->coefficient) == 0) {
+                p2 = p2->next;
+                continue;
+            }
+            
+            while ((pM->next!=NULL) && ((p1->exponent + p2->exponent) <= pM->exponent)) {
+                pM = pM->next; //why didn't it loop? 
+            }
+            if ((p1->exponent + p2->exponent) == pM->exponent) {
+                pM->coefficient += (p1->coefficient * p2->coefficient);
+                if (pM->coefficient == 0) {
+                    deleteElement(findPrevEl(headMult, pM), pM); 
+                }
+            }
+            else {
+                prev = pM;
+                newEl = createElement((p1->coefficient * p2->coefficient), (p1->exponent + p2->exponent)); 
+                insertElement(prev, newEl);
+            }
+        }
+
+        p1 = p1->next;
+    }
+    return 0; 
+
 }
