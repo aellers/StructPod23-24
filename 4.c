@@ -10,6 +10,9 @@
 
 //use exit_sucess/failure
 
+//make variable names full words
+//make variable names clearly show what they're about coefficient not co
+
 //ne mora zbrajat i mnoziti
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
