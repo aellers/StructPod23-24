@@ -29,9 +29,9 @@ int main()
 	StackElement head = { .number = 0, .next = NULL };
 	double result = 0.0;
 
-	result = calculateExpression(&head, "text.txt"); //there are problems here but I'll fix them later
-	printf("result: %lf\n", result);
-
+	result = calculateExpression(&head, "text.txt"); //funkcija vraca 0.0 neovisno o tome da li je (head->next->number) (u ovoj funkciji) to
+	printf("result: %f\n", result);
+	
 	//call delete all when make that function
 	return 0; 
 }
@@ -54,7 +54,7 @@ double calculateExpression(Position head, char* fileName)
 	char buffer[MAX] = { 0 };
 	char* currentBuffer = NULL;
 	char operator = '\0'; //is this what it should be initialized to?
-	int status = 1; //assume things fail
+	int status = 1; //assume things fail?
 	int calculateStatus = 0; 
 	double number = 0; 
 	int numberOfBytes = 0;
@@ -69,7 +69,7 @@ double calculateExpression(Position head, char* fileName)
 	currentBuffer = buffer;
 	while ((strlen(currentBuffer) > 0) && !calculateStatus) {
 		status = sscanf(currentBuffer, " %lf %n", &number, &numberOfBytes);
-		if (!status) {
+		if (status != 1) {
 			sscanf(currentBuffer, " %c %n", &operator, &numberOfBytes);
 			calculateStatus = calculateResult(head, &currentResult, operator);
 			if (calculateStatus) {
@@ -78,14 +78,21 @@ double calculateExpression(Position head, char* fileName)
 			newElement = createNewStackElement(currentResult); 
 			push(head, newElement); 
 		}
+		else {
+			newElement = createNewStackElement(number); 
+			push(head, newElement);
+		}
 
 		currentBuffer += numberOfBytes;
 	}
 	if (calculateStatus) {
-		return EXIT_FAILURE;
+		return 0;
 	}
 	
-	return head->number;
+	if (head->next) {
+		return 0; 
+	}
+	return (head->next->number); //this is corerct but in the end it's not what we get for some reason?
 }
 
 int calculateResult(Position head, double* result, char operator)
@@ -127,6 +134,7 @@ Position createNewStackElement(double number)
 {
 	Position newElement = NULL; 
 	newElement = (Position)malloc(sizeof(StackElement));
+	newElement->number = number; //this might just be the error (was one)
 	return newElement;
 }
 
@@ -139,7 +147,7 @@ int push(Position head, Position newElement)
 	return 0;
 }
 
-int pop(Position head, double* result) //is it sucess or failure if there's not element to pop?, didn't get element wanted for failure?
+int pop(Position head, double* result) 
 {
 	Position headNext = NULL; 
 
@@ -156,4 +164,3 @@ int pop(Position head, double* result) //is it sucess or failure if there's not 
 
 	return 0;
 }
-
