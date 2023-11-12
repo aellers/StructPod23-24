@@ -88,8 +88,7 @@ double calculateExpression(Position head, char* fileName)
 	if (calculateStatus) {
 		return 0;
 	}
-	
-	if (head->next) {
+	if (!head->next) { //if null //this was a really annoying error
 		return 0; 
 	}
 	return (head->next->number); //this is corerct but in the end it's not what we get for some reason?
