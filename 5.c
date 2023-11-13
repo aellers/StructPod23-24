@@ -7,7 +7,7 @@
 //how does stderr work?
 
 struct _stackElement;
-typedef struct _stackElement* Position; 
+typedef struct _stackElement* Position;
 
 typedef struct _stackElement {
 	double number;
@@ -16,34 +16,34 @@ typedef struct _stackElement {
 
 int deleteAll(Position head); //later
 
-int readExpression(char* fileName, char* buffer); 
+int readExpression(char* fileName, char* buffer);
 double calculateExpression(Position head, char* fileName);
-int calculateResult(Position head, double* result, char operator);  
+int calculateResult(Position head, double* result, char operator);
 Position createNewStackElement(double number);
 
-int push(Position head, Position newElement); 
+int push(Position head, Position newElement);
 int pop(Position head, double* result);
 
-int main() 
+int main()
 {
 	StackElement head = { .number = 0, .next = NULL };
 	double result = 0.0;
 
-	result = calculateExpression(&head, "text.txt"); //funkcija vraca 0.0 neovisno o tome da li je (head->next->number) (u ovoj funkciji) to
+	result = calculateExpression(&head, "text.txt"); 
 	printf("result: %f\n", result);
-	
+
 	//call delete all when make that function
-	return 0; 
+	return 0;
 }
 
 int readExpression(char* fileName, char* buffer)
 {
-	FILE* file = NULL; 
+	FILE* file = NULL;
 	file = fopen(fileName, "r");
 	if (!file) {
 		return EXIT_FAILURE;
 	}
-	fgets(buffer, MAX, file); 
+	fgets(buffer, MAX, file);
 
 	fclose(file);
 	return 0;
@@ -53,15 +53,15 @@ double calculateExpression(Position head, char* fileName)
 {
 	char buffer[MAX] = { 0 };
 	char* currentBuffer = NULL;
-	char operator = '\0'; //is this what it should be initialized to?
-	int status = 1; //assume things fail?
-	int calculateStatus = 0; 
-	double number = 0; 
+	char operator = '\0'; //is this what it should be initialized to? yes, correct
+	int status = 1; 
+	int calculateStatus = 0;
+	double number = 0;
 	int numberOfBytes = 0;
-	double currentResult = 0.0; 
+	double currentResult = 0.0;
 	Position newElement = NULL;
 
-	status = readExpression(fileName, buffer); 
+	status = readExpression(fileName, buffer);
 	if (status == EXIT_FAILURE) {
 		return EXIT_FAILURE;
 	}
@@ -75,11 +75,11 @@ double calculateExpression(Position head, char* fileName)
 			if (calculateStatus) {
 				break;
 			}
-			newElement = createNewStackElement(currentResult); 
-			push(head, newElement); 
+			newElement = createNewStackElement(currentResult);
+			push(head, newElement);
 		}
 		else {
-			newElement = createNewStackElement(number); 
+			newElement = createNewStackElement(number);
 			push(head, newElement);
 		}
 
@@ -89,17 +89,17 @@ double calculateExpression(Position head, char* fileName)
 		return 0;
 	}
 	if (!head->next) { //if null //this was a really annoying error
-		return 0; 
+		return 0;
 	}
-	return (head->next->number); //this is corerct but in the end it's not what we get for some reason?
+	return (head->next->number); 
 }
 
 int calculateResult(Position head, double* result, char operator)
 {
-	double operand1 = 0.0; 
-	double operand2 = 0.0; 
-	int status1 = 0; 
-	int status2 = 0; 
+	double operand1 = 0.0;
+	double operand2 = 0.0;
+	int status1 = 0;
+	int status2 = 0;
 
 	status1 = pop(head, &operand1);
 	status2 = pop(head, &operand2);
@@ -113,10 +113,13 @@ int calculateResult(Position head, double* result, char operator)
 	case '+':
 		*result = operand2 + operand1;
 		break;
-	case '-': 
+	case '-':
 		*result = operand2 - operand1;
 		break;
 	case '*':
+		if (operand1) { //if equal 0
+			return EXIT_FAILURE;
+		}
 		*result = operand2 * operand1;
 		break;
 	case '/':
@@ -131,7 +134,7 @@ int calculateResult(Position head, double* result, char operator)
 
 Position createNewStackElement(double number)
 {
-	Position newElement = NULL; 
+	Position newElement = NULL;
 	newElement = (Position)malloc(sizeof(StackElement));
 	newElement->number = number; //this might just be the error (was one)
 	return newElement;
@@ -146,9 +149,9 @@ int push(Position head, Position newElement)
 	return 0;
 }
 
-int pop(Position head, double* result) 
+int pop(Position head, double* result)
 {
-	Position headNext = NULL; 
+	Position headNext = NULL;
 
 	if (head->next != NULL) {
 		headNext = head->next->next;
@@ -158,7 +161,7 @@ int pop(Position head, double* result)
 	}
 
 	*result = head->next->number;
-	free(head->next); 
+	free(head->next);
 	head->next = headNext;
 
 	return 0;
