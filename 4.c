@@ -14,6 +14,13 @@
 //make variable names clearly show what they're about coefficient not co
 
 //ne mora zbrajat i mnoziti
+
+/*
+* todo: Monday 13.11.23
+*  make insertSorted() function
+* 3. whatever else I figure out needs doing
+
+*/
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +31,7 @@ struct _Element;
 typedef struct _Element* Position;
 
 typedef struct _Element {
-    int coefficient; 
+    int coefficient;
     int exponent;
     Position next;
 
@@ -32,15 +39,17 @@ typedef struct _Element {
 
 int readPolynomials(Position head1, Position head2, char* fileName);
 Position createElement(int co, int ex);
-int deleteElement(Position prev, Position p); 
+int deleteElement(Position prev, Position p);
 Position findPrevEl(Position head, Position p);
 int insertElement(Position beforeEl, Position el);
 int createPolynomial(Position head, char* currentBuffer);
 
-int printPolynomial(Position head); //maybe make another one which prints to some stream, overload
+int insertSorted(Position head, int coefficient, int exponent);
+
+int printPolynomial(Position head);
 
 int addPolynomials(Position head1, Position head2, Position headAdd);
-int multiplyPolynomials(Position head1, Position head2, Position headMult); //total mess, what's a nicer way to do it
+int multiplyPolynomials(Position head1, Position head2, Position headMult);
 
 
 int main() {
@@ -49,25 +58,25 @@ int main() {
 
     Element polynomialAdd = { .coefficient = 0, .exponent = 0, .next = NULL }; //for reslt of addition
     Element polynomialMult = { .coefficient = 0, .exponent = 0, .next = NULL }; //for result of multiplication
-    
 
-    readPolynomials(&polynomial1, &polynomial2, "text.txt"); 
-    printPolynomial(&polynomial1); 
+
+    readPolynomials(&polynomial1, &polynomial2, "text.txt");
+    printPolynomial(&polynomial1);
     printPolynomial(&polynomial2);
 
-    addPolynomials(&polynomial1, &polynomial2, &polynomialAdd); //some problems here, not everything shows up
+    addPolynomials(&polynomial1, &polynomial2, &polynomialAdd); //some problems here, not everything shows up //? 
     printf("add\n");
     printPolynomial(&polynomialAdd);
 
-    multiplyPolynomials(&polynomial1, &polynomial2, &polynomialMult);  
+    multiplyPolynomials(&polynomial1, &polynomial2, &polynomialMult); //sth's fucked here?
     printf("mult\n");
     printPolynomial(&polynomialMult); 
 
-    return 0; 
+    return 0;
 }
 
 int readPolynomials(Position head1, Position head2, char* fileName) {
-    FILE* file = NULL; 
+    FILE* file = NULL;
     char buffer[MAX] = { 0 };
     char* currentBuffer = NULL;
 
@@ -77,11 +86,11 @@ int readPolynomials(Position head1, Position head2, char* fileName) {
     }
 
     fgets(buffer, MAX, file);
-    currentBuffer = buffer;	
+    currentBuffer = buffer;
     createPolynomial(head1, currentBuffer);
 
     fgets(buffer, MAX, file);
-    currentBuffer = buffer; 
+    currentBuffer = buffer;
     createPolynomial(head2, currentBuffer);
 
 
@@ -104,37 +113,37 @@ Position createElement(int co, int ex) {
 
 int deleteElement(Position prev, Position p) {
     Position temp = p->next;
-    prev->next = temp; 
+    prev->next = temp;
     free(p);
-    
-    return 0; 
+
+    return 0;
 }
 
 int insertElement(Position beforeEl, Position el) {
-    Position temp = NULL; 
+    Position temp = NULL;
 
     temp = beforeEl->next;
     beforeEl->next = el;
     el->next = temp;
-    return 0; 
+    return 0;
 }
 
 int createPolynomial(Position head, char* currentBuffer) {
     Position p = NULL;
-    Position newEl = NULL; 
+    Position newEl = NULL;
     int numBytes = 0;
-    int status = 0; 
-    int co = 0; 
-    int ex = 0; 
+    int status = 0;
+    int co = 0;
+    int ex = 0;
 
     while (strlen(currentBuffer) > 0) {
-        status = sscanf(currentBuffer, "%dx^%d %n", &co, &ex, &numBytes); 
+        status = sscanf(currentBuffer, "%dx^%d %n", &co, &ex, &numBytes);
         if (status != 2) {
             fprintf(stderr, "Error reading polynomial\n");
             return EXIT_FAILURE;
         }
         currentBuffer += numBytes;
-        p = head; 
+        p = head;
         if (co == 0) {
             continue;
         }
@@ -149,20 +158,44 @@ int createPolynomial(Position head, char* currentBuffer) {
             }
         }
         else {
-            newEl = createElement(co, ex); 
-            insertElement(p, newEl); 
+            newEl = createElement(co, ex);
+            insertElement(p, newEl);
         }
-        
+
     }
 
-    return 0; 
+    return 0;
+}
+
+int insertSorted(Position head, int coefficient, int exponent) //should be for the given ex and co of some element
+{
+    Position newElement = NULL;
+    Position before = head->next;
+    if (head->next == NULL) { 
+        newElement = createElement(coefficient, exponent);
+        insertElement(head, newElement);
+        return 0; 
+    }
+    
+    while ((before->next != NULL) && (!(before->exponent > exponent && exponent >= before->next->exponent))) { //this is probably not exactly correct
+        before = before->next;
+    }
+
+    if (exponent == before->exponent) {
+        before->exponent += exponent;
+    }
+    else { //not sure if this is saying exactly what I want it to be meaning //probably is, haven't seen issues so far
+        newElement = createElement(coefficient, exponent); 
+        insertElement(before, newElement); 
+    }
+    return 0;
 }
 
 int printPolynomial(Position head) { //could make x^0 not show up but with negative ex. makes less sense
     Position p = head->next;
 
     while (p != NULL) {
-        printf("%dx^%d ", p->coefficient, p->exponent); 
+        printf("%dx^%d ", p->coefficient, p->exponent);
         if (p->next != NULL) {
             printf("+ ");
         }
@@ -170,7 +203,7 @@ int printPolynomial(Position head) { //could make x^0 not show up but with negat
     }
     printf("\n");
 
-    return 0; 
+    return 0;
 }
 
 Position findPrevEl(Position head, Position p) {
@@ -182,7 +215,7 @@ Position findPrevEl(Position head, Position p) {
         return NULL;
     }
     else {
-        return prev; 
+        return prev;
     }
 }
 
@@ -194,7 +227,7 @@ int addPolynomials(Position head1, Position head2, Position headAdd) {
 
     while ((p1 != NULL) && (p2 != NULL)) {
         if (p1->exponent == p2->exponent) {
-            newEl = createElement(p1->coefficient + p2->coefficient, p1->exponent); 
+            newEl = createElement(p1->coefficient + p2->coefficient, p1->exponent);
             insertElement(prev, newEl);
             p1 = p1->next;
             p2 = p2->next;
@@ -205,7 +238,7 @@ int addPolynomials(Position head1, Position head2, Position headAdd) {
             p1 = p1->next;
         }
         else {
-            newEl = createElement(p2->coefficient, p2->exponent); 
+            newEl = createElement(p2->coefficient, p2->exponent);
             insertElement(prev, newEl);
             p2 = p2->next;
         }
@@ -224,44 +257,25 @@ int addPolynomials(Position head1, Position head2, Position headAdd) {
         prev = newEl;
     }
 
-    return 0; 
+    return 0;
 }
 
-int multiplyPolynomials(Position head1, Position head2, Position headMult) { //numbers get input all (order) wrong, don't get it
-    Position p1 = head1->next;
-    Position p2 = head2;
-    Position pM = headMult; //for inner for loop
-    Position newEl = NULL; 
-    Position prev = headMult;
+int multiplyPolynomials(Position head1, Position head2, Position headMult) //probably works mostly, lmao
+{
+    Position position1 = head1->next;
+    Position position2 = head2->next;
+    Position newElement = NULL;
 
-    while (p1 != NULL) {
-        p2 = head2;
-        while (p2->next != NULL) {
-            p2 = p2->next;
-            pM = headMult;
-            if ((p1->coefficient * p2->coefficient) == 0) {
-                p2 = p2->next;
-                continue;
-            }
-            
-            while ((pM->next!=NULL) && ((p1->exponent + p2->exponent) <= pM->exponent)) {
-                pM = pM->next; //why didn't it loop? 
-            }
-            if ((p1->exponent + p2->exponent) == pM->exponent) {
-                pM->coefficient += (p1->coefficient * p2->coefficient);
-                if (pM->coefficient == 0) {
-                    deleteElement(findPrevEl(headMult, pM), pM); 
-                }
-            }
-            else {
-                prev = pM;
-                newEl = createElement((p1->coefficient * p2->coefficient), (p1->exponent + p2->exponent)); 
-                insertElement(prev, newEl);
-            }
+    while (position1 != NULL) {
+        position2 = head2->next;
+        while (position2 != NULL) {
+            insertSorted(headMult, position1->coefficient * position2->coefficient, position1->exponent + position2->exponent);
+                //iterate p2
+            position2 = position2->next;
         }
-
-        p1 = p1->next;
+        //iterate p1
+        position1 = position1->next;
     }
-    return 0; 
 
+    return 0;
 }
