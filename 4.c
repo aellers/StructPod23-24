@@ -40,6 +40,7 @@ typedef struct _Element {
 int readPolynomials(Position head1, Position head2, char* fileName);
 Position createElement(int co, int ex);
 int deleteElement(Position prev, Position p);
+int freeMemory(Position head);
 Position findPrevEl(Position head, Position p);
 int insertElement(Position beforeEl, Position el);
 int createPolynomial(Position head, char* currentBuffer);
@@ -64,13 +65,19 @@ int main() {
     printPolynomial(&polynomial1);
     printPolynomial(&polynomial2);
 
+    printf("before anything added, so empty\n");
+    printPolynomial(&polynomialAdd);
+
     addPolynomials(&polynomial1, &polynomial2, &polynomialAdd); //some problems here, not everything shows up //? 
     printf("add\n");
     printPolynomial(&polynomialAdd);
 
-    multiplyPolynomials(&polynomial1, &polynomial2, &polynomialMult); //sth's fucked here?
+    multiplyPolynomials(&polynomial1, &polynomial2, &polynomialMult);
     printf("mult\n");
     printPolynomial(&polynomialMult); 
+
+    //freeMemory(&polynomialAdd); //causes build error, don't know what and how to fix
+    
 
     return 0;
 }
@@ -117,6 +124,18 @@ int deleteElement(Position prev, Position p) {
     free(p);
 
     return 0;
+}
+
+int deleteAll(Position head) //nesto ovdje ne ide
+{
+    Position current = head->next;
+    Position temp = NULL;
+    while (current) {
+        temp = current->next;
+        free(current);
+        current = temp;
+    }
+    return 0; 
 }
 
 int insertElement(Position beforeEl, Position el) {
