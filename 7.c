@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,7 +32,7 @@ treePosition createTreeElement(char* newElementName);
 //having both treePosition element and treePosition* currentDirectoryPtr isn't necessary (but it sorta makes sense?)
 int goToFirstChild(treePosition element, stackPosition stackHead, treePosition* currentDirectoryPtr); 
 int goToNextSibling(treePosition element, treePosition* currentDirectoryPtr);
-int goToParent(treePosition element, stackPosition stackHead, treePosition* currentDirectoryPtr);
+int goToParent(stackPosition stackHead, treePosition* currentDirectoryPtr);
 
 //functions for stack
 int push(stackPosition head, treePosition directoryAddress); 
@@ -40,6 +41,9 @@ treePosition pop(stackPosition head);
 //user interface
 //not finished
 int menu(treePosition treeHead, stackPosition stackHead, treePosition* currentDirectoryPtr);
+int listChildren(treePosition currentDirectory);
+treePosition findChild(treePosition currentDirectory, char* dirToFind); 
+int listCurrentDir(treePosition currentDirectory);
 
 int main()
 {
@@ -118,7 +122,7 @@ int goToNextSibling(treePosition element, treePosition* currentDirectoryPtr)
 	return 0;
 }
 
-int goToParent(treePosition element, stackPosition stackHead, treePosition* currentDirectoryPtr)
+int goToParent(stackPosition stackHead, treePosition* currentDirectoryPtr)
 {
 	treePosition parent = NULL; 
 	parent = pop(stackHead); 
@@ -164,6 +168,10 @@ treePosition pop(stackPosition head)
 
 int menu(treePosition treeHead, stackPosition stackHead, treePosition* currentDirectoryPtr) //not yet implemented
 {
+	char dirName[64] = { 0 };
+	int numRead = 0; 
+	treePosition newDirPosition = NULL; 
+
 	int userChoice = 0; 
 	int continueLoop = 1; 
 	while (continueLoop)
@@ -173,15 +181,81 @@ int menu(treePosition treeHead, stackPosition stackHead, treePosition* currentDi
 		scanf_s("%d", &userChoice); 
 		switch (userChoice) 
 		{
-			case 5:
-				continueLoop = 0;
-				break;
-			default:
-				printf("Invalid input, please try again\n");
-				break;
+		case 1: 
+			printf("Enter directory name: "); 
+			numRead = scanf(" %65s", dirName); 
+			if (numRead != 1) {
+				continue;
+			}
+			addChild(*currentDirectoryPtr, dirName); 
+			break; 
+		case 2: //infinite loop for some reason?
+			//enter name
+			printf("Enter directory name: ");
+			numRead = scanf(" %65s", dirName);
+			
+			//find directory with that name 
+			//go to that directory
+			newDirPosition = findChild(*currentDirectoryPtr, dirName); 
+			push(stackHead, *currentDirectoryPtr); 
+			*currentDirectoryPtr = newDirPosition; 
+			break;
+		case 3: 
+			if (*currentDirectoryPtr != treeHead->firstChild) {
+				goToParent(stackHead, currentDirectoryPtr);
+			}
+			break; 
+		case 4: 
+			//output current directory's children
+			listChildren(*currentDirectoryPtr); 
+			break; 
+		case 5:
+			continueLoop = 0;
+			break;
+		case 6: 
+			listCurrentDir(*currentDirectoryPtr); //can be an error here but idk what it is
+			break; 
+		default:
+			printf("Invalid input, please try again\n");
+			break;
 		}
 			
 	}
 	return 0;
 }
 
+int listChildren(treePosition currentDirectory)
+{
+	treePosition position = currentDirectory->firstChild;
+	if (position == NULL) {
+		printf("Empty directory\n"); 
+		return 0; 
+	}
+	printf("\n"); 
+	while (position != NULL) {
+		printf("%s\n", position->name); 
+		position = position->nextSibling;
+	}
+
+	return 0;
+}
+
+treePosition findChild(treePosition currentDirectory, char* dirToFind)
+{
+	treePosition position = currentDirectory->firstChild;
+
+	while ((position != NULL) && (strcmp(position->name, dirToFind) != 0)) {
+		position = position->nextSibling;
+	}
+
+	if (position == NULL) {
+		printf("Unable to find directory with name %s\n", dirToFind); 
+	}
+	return position;
+}
+
+int listCurrentDir(treePosition currentDirectory)
+{
+	printf("Current directory name: %s\n", currentDirectory->name); 
+	return 0;
+}
