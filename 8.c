@@ -58,7 +58,7 @@ nodePosition add(int newValue, nodePosition rootPos)
 	if (rootPos == NULL) {
 		return newNode(newValue); //had before as rootPos = newNode(newValue);, why is that wrong?
 	}
-	else if (newValue < rootPos->value) {
+	else if (newValue <= rootPos->value) {
 		rootPos->leftChild = add(newValue, rootPos->leftChild); 
 	}
 	else if (newValue > rootPos->value) {
@@ -70,6 +70,10 @@ nodePosition add(int newValue, nodePosition rootPos)
 nodePosition newNode(int newValue)
 {
 	nodePosition newNode = (nodePosition)malloc(sizeof(node)); 
+	if (newNode == NULL) {
+		printf("Unable to allocate memory\n"); 
+		return NULL; 
+	}
 	newNode->value = newValue;
 	newNode->leftChild = NULL; 
 	newNode->rightChild = NULL; 
