@@ -64,9 +64,7 @@ nodePosition add(int newValue, nodePosition rootPos)
 	else if (newValue > rootPos->value) {
 		rootPos->rightChild = add(newValue, rootPos->rightChild); 
 	}
-	else {
-		return rootPos; 
-	}
+	return rootPos; 
 }
 
 nodePosition newNode(int newValue)
