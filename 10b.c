@@ -37,7 +37,8 @@ state* findState(state* rootState, char* stateName);
 #define NAME_SIZE 100
 
 int main() {
-	state* root; 
+	state* root = NULL; 
+	createStructure(root, "drzave.txt"); 
 
 
 	return 0; 
@@ -58,7 +59,8 @@ int createStructure(state* rootState, char* fileName)
 	while (fscanf(file, "%s %s ", stateName, cityFileName) == 2) {
 		createStateTree(rootState, stateName); 
 		currentState = findState(rootState, stateName); 
-		//create list of cities
+		//createlist
+		currentState->firstCity = createCityList(cityFileName); 
 	}
 	return 0;
 }
@@ -148,4 +150,3 @@ state* findState(state* rootState, char* stateName)
 	}
 	return rootState;
 }
-
