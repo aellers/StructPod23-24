@@ -40,6 +40,7 @@ city* createCityNode(city* root, char* cityName, int cityPop);
 
 int listStates(drzava* drzavaHead); 
 
+/*
 int main()
 {
 	drzava drzavaHead = { .ime = "", .nextDrzava = NULL }; 
@@ -50,6 +51,7 @@ int main()
 
 	return 0;
 }
+*/
 
 int createStateList(drzava* drzavaHead, char* fileName)
 {
@@ -119,7 +121,7 @@ city* createCityTree(char* fileName) //file with all the cities of one state
 	char name[NAME_SIZE] = "";
 	int cityPop = 0; 
 
-	if (fprintf(file, "%s %d ", name, cityPop) == 2) {
+	if (fscanf(file, "%s %d ", name, &cityPop) == 2) {
 		root->leftChild = NULL; 
 		root->rightChild = NULL; 
 		strcpy(root->name, name); 
@@ -134,13 +136,14 @@ city* createCityTree(char* fileName) //file with all the cities of one state
 		return root; 
 	}
 
-	while (fprintf(file, "%s %d ", name, cityPop) == 2)
+	while (fscanf(file, "%s %d ", name, &cityPop) == 2)
 	{
 		createCityNode(root, name, cityPop); 
 	}
 
 	return root;
 }
+
 city* createCityNode(city* root, char* cityName, int cityPop)
 {
 	if (root == NULL) {
@@ -178,4 +181,3 @@ int listStates(drzava* drzavaHead)
 	}
 	return 0;
 }
-
