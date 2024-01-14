@@ -141,7 +141,6 @@ city* createCityTree(char* fileName) //file with all the cities of one state
 
 	return root;
 }
-
 city* createCityNode(city* root, char* cityName, int cityPop)
 {
 	if (root == NULL) {
@@ -152,17 +151,17 @@ city* createCityNode(city* root, char* cityName, int cityPop)
 		root->rightChild = NULL; 
 	}
 	else if (root->population > cityPop) {
-		createCityNode(root->leftChild, cityName, cityPop); 
+		root->leftChild = createCityNode(root->leftChild, cityName, cityPop);
 	}
 	else if (root->population < cityPop) {
-		createCityNode(root->rightChild, cityName, cityPop); 
+		root->rightChild = createCityNode(root->rightChild, cityName, cityPop);
 	}
 	else if (root->population == cityPop) {
 		if (strcmp(root->name, cityName) <= 0) {
-			createCityNode(root->rightChild, cityName, cityPop); 
+			root->rightChild = createCityNode(root->rightChild, cityName, cityPop);
 		}
 		else {
-			createCityNode(root->leftChild, cityName, cityPop); 
+			root->leftChild = createCityNode(root->leftChild, cityName, cityPop);
 		}
 	}
 	return root;
