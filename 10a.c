@@ -86,7 +86,7 @@ int createStateList(drzava* drzavaHead, char* fileName)
 		current = drzavaHead->nextDrzava;
 		 
 	}
-
+	fclose(file); 
 
 	return 0;
 }
@@ -140,7 +140,7 @@ city* createCityTree(char* fileName) //file with all the cities of one state
 	{
 		createCityNode(root, name, cityPop); 
 	}
-
+	fclose(file); 
 	return root;
 }
 
