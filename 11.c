@@ -30,8 +30,8 @@ typedef struct _city //assuming its a binary search tree
 
 }city;
 
-int createCountryHashTable(drzava** bucketArray, char* countriesFileName, int bucketNumber); 
-drzava* createCountry(char* countryName); 
+int createCountryHashTable(drzava** bucketArray, char* countriesFileName, int bucketNumber);
+drzava* createCountry(char* countryName);
 
 city* createCityTree(char* fileName);
 city* createCityNode(city* root, char* cityName, int cityPop);
@@ -41,17 +41,17 @@ int main() {
 	drzava* bucketArray[BUCKET_NUMBER];
 
 	createCountryHashTable(&bucketArray, "drzave.txt", BUCKET_NUMBER); //something about this function causes a build error, idk what 
-	
 
 
-	return 0; 
+
+	return 0;
 }
 
 
 int createCountryHashTable(drzava** bucketArray, char* countriesFileName, int bucketNumber) {
-	int hashValue = 0; 
-	int bucketNum = 0; 
-	FILE* countryFile = fopen(countriesFileName, "r"); 
+	int hashValue = 0;
+	int bucketNum = 0;
+	FILE* countryFile = fopen(countriesFileName, "r");
 
 	if (!countryFile) {
 		return EXIT_FAILURE;
@@ -59,58 +59,58 @@ int createCountryHashTable(drzava** bucketArray, char* countriesFileName, int bu
 
 	char countryName[NAME_SIZE];
 	char citiesFileName[2 * NAME_SIZE];
-	drzava* newCountry = NULL; 
-	city* rootCity = NULL; 
+	drzava* newCountry = NULL;
+	city* rootCity = NULL;
 
-	drzava* prev = NULL; 
-	drzava* current = NULL; 
+	drzava* prev = NULL;
+	drzava* current = NULL;
 
 	while (fscanf(countryFile, " %s %s ", countryName, citiesFileName) == 2) {
-		hashValue = 0; 
+		hashValue = 0;
 		//calculate hash value
 		for (int i = 0; i < 5; ++i) { //assuming every country has four letters at least and each string is null terminated
-			hashValue += (int) countryName[i];
+			hashValue += (int)countryName[i];
 		}
 		bucketNum = hashValue % BUCKET_NUMBER;
 
-		current = bucketArray[bucketNum]; 
-		
+		current = bucketArray[bucketNum];
+
 		while ((current != NULL) && (strcmp(countryName, current->ime) > 0)) {
-			prev = current; 
+			prev = current;
 			current = current->nextDrzava;
 		}
 
 		//create country data piece, structure
-		newCountry = createCountry(countryName); 
+		newCountry = createCountry(countryName);
 		//add to correct bucket
 
-		prev->nextDrzava = newCountry; 
-		newCountry->nextDrzava = current; 
+		prev->nextDrzava = newCountry;
+		newCountry->nextDrzava = current;
 
 		//create city tree
-
+		newCountry->rootCity = createCityTree(citiesFileName); 
 	}
 
 
-	fclose(countryFile); 
-	return 0; 
+	fclose(countryFile);
+	return 0;
 }
 
 drzava* createCountry(char* countryName) {
-	drzava* newCountry = (drzava*)malloc(sizeof(drzava)); 
+	drzava* newCountry = (drzava*)malloc(sizeof(drzava));
 	if (newCountry == NULL) {
-		return newCountry; 
+		return newCountry;
 	}
 
-	strcpy(newCountry->ime, countryName); 
+	strcpy(newCountry->ime, countryName);
 	newCountry->nextDrzava = NULL;
-	newCountry->rootCity = NULL; 
+	newCountry->rootCity = NULL;
 
-	return newCountry; 
+	return newCountry;
 }
 
 
-city* createCityTree(char* fileName){ //file with all the cities of one state
+city* createCityTree(char* fileName) { //file with all the cities of one state
 	city* root = (city*)malloc(sizeof(city));
 	if (!root)
 	{
@@ -148,7 +148,7 @@ city* createCityTree(char* fileName){ //file with all the cities of one state
 	return root;
 }
 
-city* createCityNode(city* root, char* cityName, int cityPop){
+city* createCityNode(city* root, char* cityName, int cityPop) {
 	if (root == NULL) {
 		root = (city*)malloc(sizeof(city));
 		strcpy(root->name, cityName);
