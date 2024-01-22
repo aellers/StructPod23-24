@@ -80,6 +80,7 @@ int writeToStudentArray(student* students, char fileName[MAX_SIZE], int studentN
         fscanf(file, " %s %s %d", students[i].name, students[i].lastName, &(students[i].points));
 
     }
+    fclose(file); 
 
     return 0;
 }
