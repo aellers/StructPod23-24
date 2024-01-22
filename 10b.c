@@ -62,6 +62,7 @@ int createStructure(state* rootState, char* fileName)
 		//createlist
 		currentState->firstCity = createCityList(cityFileName); 
 	}
+	fclose(file); 
 	return 0;
 }
 
@@ -120,7 +121,7 @@ city* createCityList(char* fileName)
 		prev = rootCity;
 		current = prev->nextCity;
 	}
-	
+	fclose(cityFile);
 	return rootCity;
 }
 
